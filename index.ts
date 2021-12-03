@@ -31,15 +31,27 @@ export class Encryptor{
         return this.randomizeArray(this.getChars(lower, upper, numbers, password));
     }
 
-    /*getKey(length:number):string{
+    getKey(length:number):string{
         let chars:string[] = this.getCharsRandomized(true, true, true, false);
         let key:string = "";
         while(key.length < length){
+            chars = this.randomizeArray(chars);
             let random = this.getRandomInt(0, chars.length - 1);
             key += chars[random];
         }
         return key;
-    }*/
+    }
+
+    getKeyNumber(length:number):string{
+        let chars:string[] = this.getCharsRandomized(false, false, true, false);
+        let key:string = "";
+        while(key.length < length){
+            chars = this.randomizeArray(chars);
+            let random = this.getRandomInt(0, chars.length - 1);
+            key += chars[random];
+        }
+        return key;
+    }
 
     getRandomInt(min:number, max:number):number{
         if(max < min){
@@ -76,15 +88,65 @@ export class Encryptor{
         for(let i:number = 0; i < parts; i++){
             let part = "";
             while(part.length < length){
+                chars = this.randomizeArray(chars);
                 let random = this.getRandomInt(0, chars.length - 1);
                 part += chars[random];
             }
             uuid += part;
-            if(i<7){
+            if(i < 7){
                 uuid += "-";
             }
         }
         return uuid;
+    }
+
+    hash(str:string, key:string, key2:string, length:number):string{
+        //console.log("hash: " + str);
+        //console.log("key1: " + key);
+        //console.log("key2: " + key2);
+        let chars:string[] = str.split("");
+        while(chars.length < length){
+            let count:number = -1;
+            for(let i = 0; i < key.length; i++){
+                if(chars.length < length){
+                    chars.splice(count + 1, 0, key.substring(i, i + 1));
+                    count = count + 2;
+                }else{
+                    break;
+                }
+            }
+        }
+        for(let i:number = 0; i < chars.length; i++){
+            let char:string = chars[i];
+            //console.log("CHAR: " + char);
+            let index:number = char.charCodeAt(0);
+            //console.log("INDEX: " + index);
+            let sub:string = key2.substring(i, i + 1);
+            //console.log("SUB: " + sub);
+            let add:number = parseInt(sub);
+            //console.log("ADD:1 " + add);
+            add = add * add;
+            //console.log("ADD2: " + add);
+            index += add;
+            //console.log("INDEX2: " + index);
+            while(index > 126){
+                index -= 126;
+            }
+            if(index < 33){
+                index += 33;
+            }
+            char = String.fromCharCode(index);
+            //console.log("CHAR2: " + char);
+            //console.log("-------------------------------");
+            chars[i] = char;
+
+        }
+        //console.log("------------------------------");
+        str = "";
+        for(let char of chars){
+            str += char;
+        }
+        return str;
     }
 
     isChar(char:string):Boolean{
@@ -103,13 +165,16 @@ export class Encryptor{
         while(this.countUsed(used) < values.length){
             let id1:number = -1;
             while(id1 < 0){
+                //console.log("CHK: " + this.countUsed(used) + "/" + values.length)
                 if(this.countUsed(used) < (values.length * 0.8)){
+                    //console.log("FFF")
                     let rnd:number = this.getRandomIntPseudo(0, values.length - 1);
                     if(!used[rnd]){
                         used[rnd] = true;
                         id1 = rnd;
                     }
                 }else{
+                    //console.log("GGG")
                     for(let i:number = 0; i < used.length; i++){
                         if(!used[i]){
                             used[i] = true;
