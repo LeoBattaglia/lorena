@@ -1,9 +1,13 @@
 {
   "name": "lorena",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "main": "index.js",
   "scripts": {},
-  "keywords": [],
+  "keywords": [
+      "Typescript",
+      "Encryption",
+      "Decryption"
+  ],
   "author": "Leo Battaglia",
   "license": "ISC",
   "description": ""
